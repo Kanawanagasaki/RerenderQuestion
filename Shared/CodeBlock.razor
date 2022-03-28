@@ -1,0 +1,26 @@
+@inject IJSRuntime Js
+
+@if(Message is not null)
+{
+    <div>
+        <h3>
+            @(Message.Text)
+        </h3>
+        <pre><code class='language-@(Message.Language)' @ref='_ref'>@Message.Code</code></pre>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public MessageData Message { get; set; }
+
+    private ElementReference _ref;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(Message is null) return;
+
+        await Js.InvokeVoidAsync("hljs.highlightElement", _ref);
+    }
+}

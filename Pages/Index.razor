@@ -1,0 +1,39 @@
+﻿@page "/"
+@inject IJSRuntime Js
+
+<div>
+    <button @onclick='Add'>Add</button>
+    <button @onclick='Remove'>Remove</button>
+</div>
+
+@for (int i = 0; i < 20; i++)
+{
+    int _i = i;
+    var message = _i < _messages.Count ? _messages[_i] : null;
+
+    <CodeBlock Message='@message' />
+}
+
+@code
+{
+    private List<MessageData> _messages = new();
+
+    private int _a = 0;
+
+    void Add()
+    {
+        _messages.Add((_a % 3) switch
+        {
+            0 => new MessageData { Text = "C#", Code = @"public class Foo { public string Bar { return ""Baz""; } }", Language = "csharp" },
+            1 => new MessageData { Text = "HTML", Code = @"<html><head><title>Index</title></head><body><h1>Hello world!</h1></body></html>", Language = "html" },
+            _ => new MessageData { Text = "CSS", Code = @".hidden { display: none }", Language = "css" }
+        });
+        _a++;
+    }
+
+    void Remove()
+    {
+        if(_messages.Count > 0)
+            _messages.RemoveAt(0);
+    }
+}
