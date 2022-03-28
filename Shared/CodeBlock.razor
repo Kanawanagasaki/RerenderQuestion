@@ -6,7 +6,12 @@
         <h3>
             @(Message.Text)
         </h3>
-        <pre><code class='language-@(Message.Language)' @ref='_ref'>@Message.Code</code></pre>
+        @if(_showCode)
+        {
+            <pre><code class='language-@(Message.Language)' @ref='_ref'>@Message.Code</code></pre>
+        }
+        <button @onclick='SHC'>StateHasChanged</button>
+        <button @onclick='Flick'>Flick</button>
     </div>
 }
 
@@ -15,12 +20,28 @@
     [Parameter]
     public MessageData Message { get; set; }
 
-    private ElementReference _ref;
+    private ElementReference? _ref;
+    private bool _showCode = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(Message is null) return;
 
+        if(_showCode)
+            await Js.InvokeVoidAsync("hljs.highlightElement", _ref);
+    }
+
+    private async Task SHC()
+    {
+        StateHasChanged();
         await Js.InvokeVoidAsync("hljs.highlightElement", _ref);
+    }
+
+    private async Task Flick()
+    {
+        _showCode = false;
+        StateHasChanged();
+        await Task.Delay(1);
+        _showCode = true;
     }
 }
